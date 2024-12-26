@@ -1,3 +1,3 @@
-module plugin
+module github.com/injoyai/plugin
 
 

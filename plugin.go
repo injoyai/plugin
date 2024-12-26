@@ -1,57 +1,35 @@
 package plugin
 
-import (
-	"context"
-	"errors"
-	"github.com/injoyai/base/safe"
-	"github.com/injoyai/conv"
-)
+//type Manage struct {
+//	Code map[string]Interface //代码插件
+//	File map[string]*FileInfo //文件插件
+//	RPC  map[string]*RpcInfo  //网络插件
+//}
 
-var _ Interface = (*Demo)(nil)
-
-func NewDemo() Interface {
-	return &Demo{runner: safe.NewRunner(func(ctx context.Context) error {
-
-		return nil
-	})}
+type Printer interface {
+	Plugin
+	Print()
 }
 
-type Demo struct {
-	runner  *safe.Runner
-	natures map[string]interface{}
+/*
+Plugin
+Install 就是下载文件
+Uninstall 就是删除文件
+*/
+type Plugin interface {
+	Info() Info     //插件信息
+	Enable() error  //启用
+	Disable() error //禁用
+	Closed() bool   //是否关闭
+	Err() error     //错误信息
 }
 
-func (this *Demo) Group() string {
-	return "server"
-}
-
-func (this *Demo) Version() string {
-	return "v1.0.0"
-}
-
-func (this *Demo) Name() string {
-	return "演示"
-}
-
-func (this *Demo) Memo() string {
-	return "演示插件"
-}
-
-func (this *Demo) Func(name string, args map[string]interface{}) (map[string]interface{}, error) {
-	switch name {
-	case "get":
-		key := conv.String(args["key"])
-		val := this.natures[key]
-		return map[string]interface{}{"value": val}, nil
-	}
-	return nil, errors.New("未知方法")
-}
-
-func (this *Demo) Run() (<-chan RunInfo, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (this *Demo) Running() bool {
-	return this.runner.Running()
+// Info 插件信息
+type Info struct {
+	Name    string `json:"name"`    //插件名称
+	Memo    string `json:"memo"`    //说明
+	Author  string `json:"author"`  //作者
+	Version string `json:"version"` //版本
+	Website string `json:"website"` //官网
+	License string `json:"license"` //许可证
 }
